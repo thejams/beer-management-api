@@ -1,0 +1,25 @@
+# docker-compose.yml
+
+version: "3.2"
+services:
+
+  redis:
+    image: redis
+    container_name: cache
+    expose:
+      - 6379
+
+  beer-service:
+    build: ./beer-service
+    tty: true
+    ports:
+      - "4000:4000"
+    volumes:
+      - './beer-service:/beer-service'
+    links:
+      - redis
+    environment:
+      - REDIS_URL=redis://cache
+
+
+# Host volumes used to store code.

@@ -1,35 +1,49 @@
 const asyncRedis = require('async-redis')
+const uuidv4 = require('uuid/v4')
 
 class RedisHandler {
   constructor() {
     this.client = asyncRedis.createClient(process.env.REDIS_URL)
   }
 
-//   async saveCitiesLocation() {
-//     await Promise.all([
-//         this.client.set('santiagocl', JSON.stringify({latitude: -33.4372, longitude: -70.6506})),
-//         this.client.set('zurichch', JSON.stringify({latitude: 47.3666700, longitude: 8.5500000})),
-//         this.client.set('aucklandnz', JSON.stringify({latitude: -36.8404, longitude: 174.74})),
-//         this.client.set('sydneyau', JSON.stringify({latitude: -33.8667, longitude: 151.2})),
-//         this.client.set('londresuk', JSON.stringify({latitude: 51.5072, longitude: -0.1275})),
-//         this.client.set('georgiausa', JSON.stringify({latitude: 33.7490005, longitude: -84.3879776}))
-//     ])
-//     return Promise.resolve()
-//   }
+  async getBeers() {
+    return new Promise(async (resolve, reject) => {
+      let beers = await this.client.get('beerData')
+      beers = JSON.parse(beers)
+      resolve(beers)
+    })
+  }
 
-//   async getCityLocation (cityName) {
-//     return new Promise(async (resolve, reject) => {
-//         let city = await this.client.get(cityName)
-//         city = JSON.parse(city)
-//         resolve(city)
-//     })
-//   }
+  async getBeer(beerID) {
+    return new Promise(async (resolve, reject) => {
+      let beers = await this.getBeers()
+      let filteredBeers = beers.filter(beerObject => beerObject.beerID == beerID)
+      resolve(filteredBeers[0] || {})
+    })
+  }
 
-    async saveCitiesLocation(beer) {
-        
-        await this.client.set('santiagocl', JSON.stringify({latitude: -33.4372, longitude: -70.6506}))
-        return Promise.resolve()
+  async deleteBeer(beerID) {
+    return new Promise(async (resolve, reject) => {
+      let beers = await this.getBeers()
+      beers = beers.filter(beerObject => beerObject.beerID !== beerID)
+      await this.client.set('beerData', JSON.stringify(beers))
+      resolve(beers)
+    })
+  }
+
+  async saveBeer(beer) {
+    beer.beerID = uuidv4()
+    let beers = await this.getBeers()
+    if (!beers)
+      beers = [beer]
+    else {
+      let filteredBeers = beers.filter(beerObject => beerObject.name == beer.name)
+      if (!filteredBeers || filteredBeers.length === 0)
+        beers = [...beers, beer]
     }
+    await this.client.set('beerData', JSON.stringify(beers))
+    return Promise.resolve()
+  }
 }
 
 module.exports = RedisHandler

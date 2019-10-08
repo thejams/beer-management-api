@@ -25,11 +25,10 @@ app.get('/beers', async (req, res) =>  {
 
 app.get('/value/:currency', async (req, res) =>  {
     if(!req.params.currency)
-        res.send('ERROR EN GET')
+        res.status(400).send('missing currency parameter')
     else {
         let beer = await currencyHandler.getCurrencyValue(10000, req.params.currency)
-        console.log(beer)
-        res.send(`${beer} ${req.params.currency}`)
+        res.status(200).send(`${beer} ${req.params.currency}`)
     }
 })
 

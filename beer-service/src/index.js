@@ -8,48 +8,51 @@ const rabbitService = new RabbitMQHandler('beerService')
 
 app.get('/beers', async (req, res) =>  {
     let beers = await redisHandler.getBeers()
-    res.send(beers)
+    res.status(200).send(beers)
 })
 
 app.get('/beers/:beerID/boxPrice', async (req, res) => {
     if(!req.params.beerID)
-        res.send('ERROR EN GET')
+        res.status(400).send('missing beerID parameter')
     else {
         let beer = await redisHandler.getBeer(req.params.beerID)
         let quantity = (req.query.quantity) ? req.query.quantity : 1
         let price = beer.boxPrice * quantity
+        console.log(rabbitService.isConnected())
+        console.log('rabbitService.isConnected()')
+        console.log('')
         if (req.query.currency && rabbitService.isConnected()) {
             rabbitService.sendMessage('Greetings from the Micro Service #01', 'currencyService') 
-            res.send(`${price} CLP`)             
+            res.status(200).send(`${price} CLP`)             
         } else
-            res.send(`${price} CLP`)
+            res.status(200).send(`${price} CLP`)
     }
 })
 
 app.get('/beers/:beerID', async (req, res) =>  {
     if(!req.params.beerID)
-        res.send('ERROR EN GET')
+        res.status(400).send('missing beerID parameter')
     else {
         let beer = await redisHandler.getBeer(req.params.beerID)
-        res.send(beer)
+        res.status(200).send(beer)
     }
 })
 
 app.delete('/beers/:beerID', async (req, res) =>  {
     if(!req.params.beerID)
-        res.send('ERROR EN DELETE')
+        res.status(400).send('missing beerID parameter')
     else {
         let beer = await redisHandler.deleteBeer(req.params.beerID)
-        res.send(beer)
+        res.status(200).send(beer)
     }
 })
 
 app.post('/beers', async function (req, res) {
     if(!req.body || !req.body.name || !req.body.currency || !req.body.description || !req.body.boxPrice)
-        res.send('ERROR')
+        res.status(400).send('missing parameters')
     else {
-        await redisHandler.saveBeer(req.body)
-        res.send('post request')
+        let beer = await redisHandler.saveBeer(req.body)
+        res.status(200).send(beer)
     }
 })
 

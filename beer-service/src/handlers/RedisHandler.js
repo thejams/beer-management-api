@@ -42,7 +42,7 @@ class RedisHandler {
         beers = [...beers, beer]
     }
     await this.client.set('beerData', JSON.stringify(beers))
-    return Promise.resolve()
+    return Promise.resolve(beer)
   }
 }
 

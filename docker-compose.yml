@@ -1,36 +1,19 @@
 # docker-compose.yml
 
 version: "3.2"
+
+networks:
+  isolation-network:
+    driver: bridge
+
 services:
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: rabbitserver
-    expose:
-      - 5672
-      - 15672
-
   redis:
     image: redis
     container_name: cache
     expose:
       - 6379
-
-  beer-service:
-    build: ./beer-service
-    tty: true
-    ports:
-      - "4000:4000"
-    volumes:
-      - './beer-service:/beer-service'
-    links:
-      - redis
-      - rabbitmq
-    environment:
-      - REDIS_URL=redis://cache
-      - RABBIT_URL=rabbitmq
-    depends_on:
-      - rabbitmq
+    networks:
+      - isolation-network
 
   currency-service:
     build: ./currency-service
@@ -41,12 +24,26 @@ services:
       - './currency-service:/currency-service'
     links:
       - redis
-      - rabbitmq
     environment:
       - CURRENCY_LAYER_LEY=adbbce308048ec60418c2e50bee0b2ee
-      - RABBIT_URL=rabbitmq
-    depends_on:
-      - rabbitmq
+    networks:
+      - isolation-network
+  
+  beer-service:
+    build: ./beer-service
+    tty: true
+    ports:
+      - "4000:4000"
+    volumes:
+      - './beer-service:/beer-service'
+    links:
+      - redis
+      - currency-service
+    environment:
+      - REDIS_URL=redis://cache
+      - CURRENCY_SERVICE=currency-service
+    networks:
+      - isolation-network
 
 
 # Host volumes used to store code.

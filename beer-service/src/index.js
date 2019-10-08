@@ -2,9 +2,10 @@ const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 4000
 app.use(express.json())
-const {RedisHandler, RabbitMQHandler} = require('./handlers')
+const {RedisHandler} = require('./handlers')
 const redisHandler = new RedisHandler()
-const rabbitService = new RabbitMQHandler('beerService')
+const axios = require('axios')
+const CURRENCY_URL = `http://${process.env.CURRENCY_SERVICE}` || 'localhost:5000'
 
 app.get('/beers', async (req, res) =>  {
     let beers = await redisHandler.getBeers()
@@ -18,12 +19,12 @@ app.get('/beers/:beerID/boxPrice', async (req, res) => {
         let beer = await redisHandler.getBeer(req.params.beerID)
         let quantity = (req.query.quantity) ? req.query.quantity : 1
         let price = beer.boxPrice * quantity
-        console.log(rabbitService.isConnected())
-        console.log('rabbitService.isConnected()')
-        console.log('')
-        if (req.query.currency && rabbitService.isConnected()) {
-            rabbitService.sendMessage('Greetings from the Micro Service #01', 'currencyService') 
-            res.status(200).send(`${price} CLP`)             
+        if (req.query.currency) {
+            const response = await axios.get(`${CURRENCY_URL}:5000/value/${req.query.currency}/${price}`, {timeout: 5000 })
+            if (response && response.data)
+                res.status(200).send(`${response.data}`)
+            else
+                res.status(500).send(`internal error`)             
         } else
             res.status(200).send(`${price} CLP`)
     }

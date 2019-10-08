@@ -1,12 +1,13 @@
 const express = require('express')
+const axios = require('axios')
+const asyncRedis = require('async-redis')
 const app = express()
 const PORT = process.env.PORT || 4000
 app.use(express.json())
 const {RedisHandler} = require('./handlers')
-const REDIS_SERVER = process.env.REDIS_URL || '127.0.0.1:6379'
-const redisHandler = new RedisHandler(REDIS_SERVER)
-const axios = require('axios')
 const CURRENCY_URL = `http://${process.env.CURRENCY_SERVICE}` || 'localhost:5000'
+const REDIS_SERVER = process.env.REDIS_URL || 'http://127.0.0.1:6379'
+const redisHandler = new RedisHandler(asyncRedis, REDIS_SERVER)
 
 app.get('/beers', async (req, res) =>  {
     let beers = await redisHandler.getBeers()

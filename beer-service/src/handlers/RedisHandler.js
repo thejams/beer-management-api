@@ -1,23 +1,32 @@
-const asyncRedis = require('async-redis')
 const uuidv4 = require('uuid/v4')
 
 class RedisHandler {
-  constructor(REDIS_URL) {
-    this.client = asyncRedis.createClient(REDIS_URL)
+  constructor(REDIS_CLIENT, REDIS_URL) {
+    this.client = REDIS_CLIENT.createClient(REDIS_URL)
   }
 
   async getBeers() {
     return new Promise(async (resolve, reject) => {
       let beers = await this.client.get('beerData')
-      beers = JSON.parse(beers)
-      resolve(beers)
+      if (beers) {
+        beers = JSON.parse(beers)
+        resolve(beers)
+      }
+      else
+        resolve()
     })
   }
 
   async getBeer(beerID) {
+    console.log(beerID)
+    console.log('askdnaiosdnaidnauisdnasuidnauisdnuas')
     return new Promise(async (resolve, reject) => {
       let beers = await this.getBeers()
-      let filteredBeers = beers.filter(beerObject => beerObject.beerID == beerID)
+      console.log(beers)
+      console.log('mierdaaaaa')
+      let filteredBeers = []
+      if (beers && beers.length > 0)
+        filteredBeers = beers.filter(beerObject => beerObject.beerID == beerID)
       resolve(filteredBeers[0] || {})
     })
   }

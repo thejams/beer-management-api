@@ -10,7 +10,10 @@ app.get('/value/:currency/:value', async (req, res) =>  {
         res.status(400).send('missing currency parameter')
     else {
         let beer = await currencyHandler.getCurrencyValue(req.params.value, req.params.currency)
-        res.status(200).send(`${beer} ${req.params.currency}`)
+        let currency = 'CLP'
+        if (beer.isValidCurrency)
+            currency = req.params.currency
+        res.status(200).send(`${beer.value} ${currency}`)
     }
 })
 

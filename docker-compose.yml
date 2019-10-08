@@ -3,6 +3,13 @@
 version: "3.2"
 services:
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitserver
+    expose:
+      - 5672
+      - 15672
+
   redis:
     image: redis
     container_name: cache
@@ -18,8 +25,26 @@ services:
       - './beer-service:/beer-service'
     links:
       - redis
+      - rabbitmq
     environment:
       - REDIS_URL=redis://cache
+     depends_on:
+      - rabbitmq
+
+  currency-service:
+    build: ./currency-service
+    tty: true
+    ports:
+      - "5000:5000"
+    volumes:
+      - './currency-service:/currency-service'
+    links:
+      - redis
+      - rabbitmq
+    environment:
+      - CURRENCY_LAYER_LEY=adbbce308048ec60418c2e50bee0b2ee
+     depends_on:
+      - rabbitmq
 
 
 # Host volumes used to store code.

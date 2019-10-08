@@ -35,6 +35,7 @@ build/Release
 
 # Dependency directories
 beer-service/node_modules/
+currency-service/node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files

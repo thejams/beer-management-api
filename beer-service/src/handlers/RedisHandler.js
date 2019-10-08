@@ -2,8 +2,8 @@ const asyncRedis = require('async-redis')
 const uuidv4 = require('uuid/v4')
 
 class RedisHandler {
-  constructor() {
-    this.client = asyncRedis.createClient(process.env.REDIS_URL)
+  constructor(REDIS_URL) {
+    this.client = asyncRedis.createClient(REDIS_URL)
   }
 
   async getBeers() {

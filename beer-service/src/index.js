@@ -3,7 +3,8 @@ const app = express()
 const PORT = process.env.PORT || 4000
 app.use(express.json())
 const {RedisHandler} = require('./handlers')
-const redisHandler = new RedisHandler()
+const REDIS_SERVER = process.env.REDIS_URL || '127.0.0.1:6379'
+const redisHandler = new RedisHandler(REDIS_SERVER)
 const axios = require('axios')
 const CURRENCY_URL = `http://${process.env.CURRENCY_SERVICE}` || 'localhost:5000'
 

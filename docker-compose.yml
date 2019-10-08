@@ -28,7 +28,7 @@ services:
       - rabbitmq
     environment:
       - REDIS_URL=redis://cache
-     depends_on:
+    depends_on:
       - rabbitmq
 
   currency-service:
@@ -43,7 +43,7 @@ services:
       - rabbitmq
     environment:
       - CURRENCY_LAYER_LEY=adbbce308048ec60418c2e50bee0b2ee
-     depends_on:
+    depends_on:
       - rabbitmq
 
 

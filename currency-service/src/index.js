@@ -2,11 +2,9 @@ const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 5000
 app.use(express.json())
-// const RabbitService = require('./rabbit-service')
-// const rabbitService = new RabbitService('microService01')
-const {CurrencyLayerHandler} = require('./handlers')
+const {CurrencyLayerHandler, RabbitMQHandler} = require('./handlers')
 const currencyHandler = new CurrencyLayerHandler()
-
+const rabbitService = new RabbitMQHandler('currencyService')
 
 app.get('/beers', async (req, res) =>  {
     let beers = await redisHandler.getBeers()

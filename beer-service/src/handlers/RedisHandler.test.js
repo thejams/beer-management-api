@@ -33,3 +33,19 @@ test('should return an object with the data of the beer pack save in redis', asy
     expect(beer.boxPrice).toEqual(beerData.boxPrice)
     expect(beer).toHaveProperty('beerID') 
 })
+
+test('should return an object with the data of the beer pack save in redis', async () => {
+    let beerData = {
+        "name": "mierda",
+        "description": "pura mierda",
+        "currency": "CLP",
+        "boxPrice": 7000
+    }
+    let newBeer = await redisHandler.saveBeer(beerData)
+    let beer = await redisHandler.getBeer(newBeer.beerID)
+    expect(beer.name).toEqual(beerData.name)
+    expect(beer.description).toEqual(beerData.description)
+    expect(beer.currency).toEqual(beerData.currency)
+    expect(beer.boxPrice).toEqual(beerData.boxPrice)
+    expect(beer).toHaveProperty('beerID') 
+})

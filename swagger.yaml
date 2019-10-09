@@ -1,0 +1,203 @@
+swagger: "2.0"
+info:
+  description: "This is the Api Documentation for the beer management services."
+  version: "2.0.0"
+  title: "BEER-MANAGEMENT API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+schemes:
+- "http"
+- "https"
+tags:
+- name: "beerService"
+  description: "Everything about the beer administration"
+- name: "currencyService"
+  description: "Everything about the currency exchanges administration"
+paths:
+  /beers:
+    post:
+      tags:
+        - "beerService"
+      summary: "Add a new pack of beers"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Data for a beer box"
+          required: true
+          schema:
+            $ref: '#/definitions/BeerDataResponse'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/BeerDataResponse'
+        400:
+          description: "missing parameters"
+        404:
+          description: "endpoint not found"
+    get:
+      tags:
+        - "beerService"
+      summary: "get a list of al beer packs"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/BeerDataResponseArray'
+        400:
+          description: "missing parameters"
+        404:
+          description: "endpoint not found"  
+  /beers/{beerID}:
+    get:
+      tags:
+        - "beerService"
+      summary: "get a specific beer box detail"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "beerID"
+          in: "path"
+          description: "unique id for the beer box"
+          required: true
+          type: "string"
+          format: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/BeerDataResponse'
+        400:
+          description: "missing beerID parameter"
+        404:
+          description: "endpoint not found"
+    delete:
+      tags:
+        - "beerService"
+      summary: "delete a specific beer box detail"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "beerID"
+          in: "path"
+          description: "unique id for the beer box"
+          required: true
+          type: "string"
+          format: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/BeerDataResponse'
+        400:
+          description: "missing beerID parameter"
+        404:
+          description: "endpoint not found"
+  /beers/{beerID}/boxPrice:
+    get:
+      tags:
+        - "beerService"
+      summary: "get the price of a beer box in another currency ('CLP' is the default currency)"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "beerID"
+          in: "path"
+          description: "unique id for the beer box"
+          required: true
+          type: "string"
+          format: "string"
+        - name: "currency"
+          in: "query"
+          description: "the foreign currency"
+          required: false
+          type: "string"
+          format: "string"
+        - name: "quantity"
+          in: "query"
+          description: "the quantity of beer box"
+          required: false
+          type: "string"
+          format: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/CurrencyDataResponse'
+        400:
+          description: "missing beerID parameter"
+        404:
+          description: "endpoint not found"
+  /currencyValue:
+    get:
+      tags:
+        - "currencyService"
+      summary: "get the price of a beer box in another currency"
+      produces:
+      - "application/json"
+      parameters:
+        - name: "currency"
+          in: "query"
+          description: "the foreign currency"
+          required: false
+          type: "string"
+          format: "string"
+        - name: "value"
+          in: "query"
+          description: "the value that we want to know in another currency"
+          required: false
+          type: "string"
+          format: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/CurrencyDataResponse'
+        400:
+          description: "missing beerID parameter"
+        404:
+          description: "endpoint not found"
+
+definitions:
+  BeerDataResponseArray:
+    type: "object"
+    properties:
+      beers:
+        type: "array"
+        items:
+          $ref: "#/definitions/BeerDataResponse"
+  BeerDataResponse:
+    type: "object"
+    properties:
+      beerID:
+        type: "string"
+        description: "unique id for each beer box"
+      name:
+        type: "string"
+        description: "name of the beer box"
+      currency:
+        type: "string"
+        description: "currency of the beer box"
+      description:
+        type: "string"
+        description: "description of the beer box"
+      boxPrice:
+        type: "integer"
+        description: "price of the beer box"
+  CurrencyDataResponse:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        description: "the value of any object"
+      currency:
+        type: "string"
+        description: "the currency of the current value"

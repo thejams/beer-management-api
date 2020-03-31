@@ -22,6 +22,7 @@ services:
       - "5000:5000"
     volumes:
       - './currency-service:/currency-service'
+      - '/currency-service/node_modules'
     links:
       - redis
     environment:
@@ -36,6 +37,7 @@ services:
       - "4000:4000"
     volumes:
       - './beer-service:/beer-service'
+      - '/beer-service/node_modules'
     links:
       - redis
       - currency-service

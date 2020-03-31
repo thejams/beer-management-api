@@ -18,12 +18,8 @@ class RedisHandler {
   }
 
   async getBeer(beerID) {
-    console.log(beerID)
-    console.log('askdnaiosdnaidnauisdnasuidnauisdnuas')
     return new Promise(async (resolve, reject) => {
       let beers = await this.getBeers()
-      console.log(beers)
-      console.log('mierdaaaaa')
       let filteredBeers = []
       if (beers && beers.length > 0)
         filteredBeers = beers.filter(beerObject => beerObject.beerID == beerID)

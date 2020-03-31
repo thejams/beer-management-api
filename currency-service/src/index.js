@@ -5,15 +5,15 @@ app.use(express.json())
 const {CurrencyLayerHandler} = require('./handlers')
 const currencyHandler = new CurrencyLayerHandler()
 
-app.get('/value/:currency/:value', async (req, res) =>  {
-    if(!req.params.currency && req.params.value)
+app.get('/currencyValue', async (req, res) =>  {
+    if(!req.query.currency && req.query.value)
         res.status(400).send('missing currency parameter')
     else {
-        let currencyValue = await currencyHandler.getCurrencyValue(req.params.value, req.params.currency)
+        let currencyValue = await currencyHandler.getCurrencyValue(req.query.value, req.query.currency.toString().toUpperCase())
         let currency = 'CLP'
         if (currencyValue.isValidCurrency)
-            currency = req.params.currency
-        res.status(200).send(`${currencyValue.value} ${currency}`)
+            currency = req.query.currency
+        res.status(200).send({value: currencyValue.value, currency: currency.toString().toUpperCase()})
     }
 })
 

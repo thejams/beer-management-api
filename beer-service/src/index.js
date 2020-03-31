@@ -11,7 +11,7 @@ const redisHandler = new RedisHandler(asyncRedis, REDIS_SERVER)
 
 app.get('/beers', async (req, res) =>  {
     let beers = await redisHandler.getBeers()
-    res.status(200).send(beers)
+    res.status(200).send({beers})
 })
 
 app.get('/beers/:beerID/boxPrice', async (req, res) => {
@@ -22,13 +22,13 @@ app.get('/beers/:beerID/boxPrice', async (req, res) => {
         let quantity = (req.query.quantity) ? req.query.quantity : 1
         let price = beer.boxPrice * quantity
         if (req.query.currency) {
-            const response = await axios.get(`${CURRENCY_URL}:5000/value/${req.query.currency}/${price}`, {timeout: 5000 })
+            const response = await axios.get(`${CURRENCY_URL}:5000/currencyValue`, { params: {currency: req.query.currency, value: price}, timeout: 5000 })
             if (response && response.data)
-                res.status(200).send(`${response.data}`)
+                res.status(200).send(response.data)
             else
                 res.status(500).send(`internal error`)             
         } else
-            res.status(200).send(`${price} CLP`)
+            res.status(200).send({value: price, currency: `CLP`})
     }
 })
 
@@ -51,7 +51,7 @@ app.delete('/beers/:beerID', async (req, res) =>  {
 })
 
 app.post('/beers', async function (req, res) {
-    if(!req.body || !req.body.name || !req.body.currency || !req.body.description || !req.body.boxPrice)
+    if(!req.body || !req.body.name || !req.body.boxPrice)
         res.status(400).send('missing parameters')
     else {
         let beer = await redisHandler.saveBeer(req.body)

@@ -5,8 +5,8 @@ const redisHandler = new RedisHandler(redisServer, REDIS_SERVER)
 
 test('should save a beer in redis', async () => {
     let beerData = {
-        "name": "mierda",
-        "description": "pura mierda",
+        "name": "Corona",
+        "description": "Cerveza mejicana",
         "currency": "CLP",
         "boxPrice": 7000
     }
@@ -20,8 +20,8 @@ test('should save a beer in redis', async () => {
 
 test('should return an object with the data of the beer pack save in redis', async () => {
     let beerData = {
-        "name": "mierda",
-        "description": "pura mierda",
+        "name": "Corona",
+        "description": "Cerveza mejicana",
         "currency": "CLP",
         "boxPrice": 7000
     }
